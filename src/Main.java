@@ -27,8 +27,9 @@ public class Main {
                 "\n7. Se favoritfiskar" +
                 "\n8. Antal fiskar sammanlagt" +
                 "\n9. Fiskar sorterade baserat på ålder" +
-                "\n10. Visa menyn" +
-                "\n11. Avsluta");
+                "\n10. Visa fiskar tillsammans med art och mat" +
+                "\n11. Visa menyn" +
+                "\n12. Avsluta");
     }
 
     public static void main(String[] args) {
@@ -44,12 +45,13 @@ public class Main {
                 case 3: updateFish(); break;
                 case 4: deleteFish(scanner.nextInt()); break;
                 case 5: fishNameSearch(); break;
-                case 6: showMenu(); break;
-                case 7: updateToFavourite(); break;
-                case 8: showFavourite(); break;
-                case 9: showFishSum(); break;
-                case 10: showAgeIncreasing(); break;
-                case 11: quit = true;
+                case 6: updateToFavourite(); break;
+                case 7: showFavourite(); break;
+                case 8: showFishSum(); break;
+                case 9: showAgeIncreasing(); break;
+                case 10: showFishWithSpeciesAndFood(); break;
+                case 11: showMenu(); break;
+                case 12: quit = true;
 
             }
         }
@@ -266,5 +268,25 @@ public class Main {
 
     }
 
+    private static void showFishWithSpeciesAndFood() {
+        String sql = "SELECT fisk.fiskNamn, fisk.fiskAlder, art.artNamn, mat.matSort " +
+                "FROM fisk " +
+                "JOIN art ON fisk.fiskArtId = art.artId " +
+                "JOIN mat ON fisk.fiskMatId = mat.matId";
+
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                System.out.println("Namn: " + rs.getString("fiskNamn") + "\t" +
+                        "Ålder: " + rs.getInt("fiskAlder") + "\t" +
+                        "Art: " + rs.getString("artNamn") + "\t" +
+                        "Mat: " + rs.getString("matSort"));
+            }
+        } catch (SQLException e) {
+            System.out.println("Fel vid hämtning av fiskdata: " + e.getMessage());
+        }
+    }
 
 }
